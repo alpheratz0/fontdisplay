@@ -69,7 +69,6 @@ fontset_render_onto(fontset_t *fontset, bitmap_t *bmp) {
 		label_render_onto(bmp, fontset->font, fontset->style->text_color, alphabet_uc1, current_x, current_y);
 		current_y += fontset->font->height;
 
-
 		current_x = (bmp->width - strlen(alphabet_uc2) * fontset->font->width) / 2;
 		label_render_onto(bmp, fontset->font, fontset->style->text_color, alphabet_uc2, current_x, current_y);
 		current_y += fontset->font->height;
