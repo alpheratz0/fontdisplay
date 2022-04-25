@@ -14,7 +14,7 @@ static const char alphabet_lc1[] = "a b c d e f g h i j k l m";
 static const char alphabet_lc2[] = "n o p q r s t u v w x y z";
 static const char alphabet_uc1[] = "A  B  C  D  E  F  G  H  I  J  K  L  M";
 static const char alphabet_uc2[] = "N  O  P  Q  R  S  T  U  V  W  X  Y  Z";
-static const char symbols[] = "~ ! @ # $ % ^ & _ \" ` ' | , . ?";
+static const char symbols[] = "~ ! @ # $ % ^ & _ \" ` ' | : , . ?";
 static const char symbols2[] = "- + * / \\ = [ ] ( ) { } < > ;";
 
 extern fontset_style_t
