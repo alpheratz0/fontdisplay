@@ -1,5 +1,5 @@
-#ifndef __FTDS_BASE_FONT_H__
-#define __FTDS_BASE_FONT_H__
+#ifndef __FONTDISPLAY_BASE_FONT_H__
+#define __FONTDISPLAY_BASE_FONT_H__
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

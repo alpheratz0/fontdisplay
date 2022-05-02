@@ -1,5 +1,5 @@
-#ifndef __FTDS_UI_LABEL_H__
-#define __FTDS_UI_LABEL_H__
+#ifndef __FONTDISPLAY_UI_LABEL_H__
+#define __FONTDISPLAY_UI_LABEL_H__
 
 #include "../base/bitmap.h"
 #include "../base/font.h"

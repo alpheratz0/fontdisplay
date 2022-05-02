@@ -1,5 +1,5 @@
-#ifndef __FTDS_UTIL_COLOR_H__
-#define __FTDS_UTIL_COLOR_H__
+#ifndef __FONTDISPLAY_UTIL_COLOR_H__
+#define __FONTDISPLAY_UTIL_COLOR_H__
 
 #include "numdef.h"
 

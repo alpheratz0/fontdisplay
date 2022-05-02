@@ -1,5 +1,5 @@
-#ifndef __FTDS_UI_FONTSET_H__
-#define __FTDS_UI_FONTSET_H__
+#ifndef __FONTDISPLAY_UI_FONTSET_H__
+#define __FONTDISPLAY_UI_FONTSET_H__
 
 #include <stdbool.h>
 

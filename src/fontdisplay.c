@@ -48,7 +48,7 @@ key_press_callback(u32 key) {
 
 static void
 usage(void) {
-	puts("Usage: ftds [ -hv ] FONT_FAMILY");
+	puts("Usage: fontdisplay [ -hv ] FONT_FAMILY");
 	puts("Options are:");
 	puts("     -h | --help                    display this message and exit");
 	puts("     -v | --version                 display the program version");
@@ -57,7 +57,7 @@ usage(void) {
 
 static void
 version(void) {
-	puts("ftds version "VERSION);
+	puts("fontdisplay version "VERSION);
 	exit(0);
 }
 
@@ -77,7 +77,7 @@ main(int argc, char **argv) {
 	fontset_t *fontset;
 	fontset_style_t style;
 
-	window = window_create("ftds", "ftds");
+	window = window_create("fontdisplay", "fontdisplay");
 	font = font_load(ffamily, 40);
 	style = fontset_style_from(0xada54e);
 	fontset = fontset_create(font, &style, true, true, true);

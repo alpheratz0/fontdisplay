@@ -1,10 +1,10 @@
-ftds
-====
+fontdisplay
+===========
 simple X11 program that renders the alphabet, numbers & symbols with the specified font, preview: https://i.imgur.com/inDVWOV.mp4
 
 build
 =====
-in order to build ftds you will need xcb, freetype and fontconfig headers
+in order to build fontdisplay you will need xcb, freetype and fontconfig headers
 $ make
 
 install

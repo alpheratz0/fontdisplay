@@ -1,5 +1,5 @@
-#ifndef __FTDS_BASE_BITMAP_H__
-#define __FTDS_BASE_BITMAP_H__
+#ifndef __FONTDISPLAY_BASE_BITMAP_H__
+#define __FONTDISPLAY_BASE_BITMAP_H__
 
 #include "../util/numdef.h"
 

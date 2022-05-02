@@ -1,5 +1,5 @@
-#ifndef __FTDS_UTIL_NUMDEF_H__
-#define __FTDS_UTIL_NUMDEF_H__
+#ifndef __FONTDISPLAY_UTIL_NUMDEF_H__
+#define __FONTDISPLAY_UTIL_NUMDEF_H__
 
 #include <stdint.h>
 

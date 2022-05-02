@@ -6,14 +6,14 @@
 
 extern void
 die(const char *err) {
-	fprintf(stderr, "ftds: %s\n", err);
+	fprintf(stderr, "fontdisplay: %s\n", err);
 	exit(1);
 }
 
 extern void
 dief(const char *err, ...) {
 	va_list list;
-	fputs("ftds: ", stderr);
+	fputs("fontdisplay: ", stderr);
 	va_start(list, err);
 	vfprintf(stderr, err, list);
 	va_end(list);

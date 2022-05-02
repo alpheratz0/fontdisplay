@@ -1,5 +1,5 @@
-#ifndef __FTDS_X11_WINDOW_H__
-#define __FTDS_X11_WINDOW_H__
+#ifndef __FONTDISPLAY_X11_WINDOW_H__
+#define __FONTDISPLAY_X11_WINDOW_H__
 
 #include <xcb/xcb.h>
 #include <xcb/xcb_image.h>
