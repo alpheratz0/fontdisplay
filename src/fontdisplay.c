@@ -48,10 +48,18 @@ key_press_callback(u32 key) {
 
 static void
 usage(void) {
-	puts("Usage: fontdisplay [ -hv ] FONT_FAMILY");
+	puts("Usage: fontdisplay [ -hkv ] FONT_FAMILY");
 	puts("Options are:");
 	puts("     -h | --help                    display this message and exit");
+	puts("     -k | --keybindings             display the keybindings");
 	puts("     -v | --version                 display the program version");
+	exit(0);
+}
+
+static void
+keybindings(void) {
+	puts("Keybindings are:");
+	puts("q/esc: exit");
 	exit(0);
 }
 
@@ -69,6 +77,7 @@ main(int argc, char **argv) {
 	if (argc > 0) {
 		if (match_opt(*argv, "-h", "--help")) usage();
 		else if (match_opt(*argv, "-v", "--version")) version();
+		else if (match_opt(*argv, "-k", "--keybindings")) keybindings();
 		else if (strlen(*argv) > 0 && **argv == '-') dief("invalid option %s", *argv);
 		else ffamily = *argv;
 	}
