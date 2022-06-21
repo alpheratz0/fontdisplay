@@ -71,20 +71,17 @@ version(void) {
 
 int
 main(int argc, char **argv) {
-	/* skip program name */
-	--argc; ++argv;
-
-	if (argc > 0) {
-		if (match_opt(*argv, "-h", "--help")) usage();
-		else if (match_opt(*argv, "-v", "--version")) version();
-		else if (match_opt(*argv, "-k", "--keybindings")) keybindings();
-		else if (strlen(*argv) > 0 && **argv == '-') dief("invalid option %s", *argv);
-		else ffamily = *argv;
-	}
-
 	font_t *font;
 	fontset_t *fontset;
 	fontset_style_t style;
+
+	if (++argv, --argc > 0) {
+		if (match_opt(*argv, "-h", "--help")) usage();
+		else if (match_opt(*argv, "-v", "--version")) version();
+		else if (match_opt(*argv, "-k", "--keybindings")) keybindings();
+		else if (**argv == '-') dief("invalid option %s", *argv);
+		else ffamily = *argv;
+	}
 
 	window = window_create("fontdisplay", "fontdisplay");
 	font = font_load(ffamily, 40);
