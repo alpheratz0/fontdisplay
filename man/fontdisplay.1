@@ -13,6 +13,13 @@ display the keybindings
 .TP
 \fB\-v\fR, \fB\-\-version\fR
 display the program version
+.SH EXAMPLES
+.TP
+\fBpreview iosevka font (needs to be installed)\fR
+fontdisplay 'Iosevka'
+.TP
+\fBselect a font family using dmenu and preview it\fR
+fc-list : family | grep -v ',' | dmenu -i | xargs -I{} fontdisplay '{}'
 .SH EXIT STATUS
 .TP
 \fB0\fR
