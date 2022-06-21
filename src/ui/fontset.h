@@ -18,32 +18,39 @@
 #ifndef __FONTDISPLAY_UI_FONTSET_H__
 #define __FONTDISPLAY_UI_FONTSET_H__
 
+#include <stdint.h>
 #include <stdbool.h>
 
 #include "../base/bitmap.h"
 #include "../base/font.h"
-#include "../util/numdef.h"
 
 typedef struct fontset_style fontset_style_t;
 typedef struct fontset fontset_t;
 
+enum charset {
+	CHARSET_ALPHABET = 1,
+	CHARSET_NUMBERS  = 1 << 1,
+	CHARSET_SYMBOLS  = 1 << 2,
+	CHARSET_ALL = CHARSET_ALPHABET |
+	              CHARSET_SYMBOLS |
+	              CHARSET_NUMBERS
+};
+
 struct fontset_style {
-	u32 text_color;
+	font_t *font;
+	uint32_t foreground;
 };
 
 struct fontset {
-	font_t *font;
 	fontset_style_t *style;
-	bool numbers;
-	bool alphabet;
-	bool symbols;
+	enum charset charset;
 };
 
 extern fontset_style_t
-fontset_style_from(u32 text_color);
+fontset_style_from(font_t *font, uint32_t foreground);
 
 extern fontset_t *
-fontset_create(font_t *font, fontset_style_t *style, bool numbers, bool alphabet, bool symbols);
+fontset_create(fontset_style_t *style, enum charset charset);
 
 extern void
 fontset_render_onto(fontset_t *fontset, bitmap_t *bmp);

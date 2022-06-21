@@ -114,8 +114,8 @@ main(int argc, char **argv)
 
 	window = window_create("fontdisplay", "fontdisplay");
 	font = font_load(ffamily, 40);
-	style = fontset_style_from(0xada54e);
-	fontset = fontset_create(font, &style, true, true, true);
+	style = fontset_style_from(font, 0xada54e);
+	fontset = fontset_create(&style, CHARSET_ALL);
 
 	fontset_render_onto(fontset, window->bmp);
 
