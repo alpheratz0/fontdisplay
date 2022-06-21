@@ -29,13 +29,15 @@ static char *ffamily = "Iosevka";
 static window_t *window;
 
 static bool
-match_opt(const char *in, const char *sh, const char *lo) {
+match_opt(const char *in, const char *sh, const char *lo)
+{
 	return (strcmp(in, sh) == 0) ||
 		   (strcmp(in, lo) == 0);
 }
 
 static void
-key_press_callback(u32 key) {
+key_press_callback(u32 key)
+{
 	switch (key) {
 		case KEY_ESCAPE:
 		case KEY_Q:
@@ -47,7 +49,8 @@ key_press_callback(u32 key) {
 }
 
 static void
-usage(void) {
+usage(void)
+{
 	puts("Usage: fontdisplay [ -hkv ] FONT_FAMILY");
 	puts("Options are:");
 	puts("     -h | --help                    display this message and exit");
@@ -57,20 +60,23 @@ usage(void) {
 }
 
 static void
-keybindings(void) {
+keybindings(void)
+{
 	puts("Keybindings are:");
 	puts("q/esc: exit");
 	exit(0);
 }
 
 static void
-version(void) {
+version(void)
+{
 	puts("fontdisplay version "VERSION);
 	exit(0);
 }
 
 int
-main(int argc, char **argv) {
+main(int argc, char **argv)
+{
 	font_t *font;
 	fontset_t *fontset;
 	fontset_style_t style;

@@ -26,7 +26,8 @@
 #include "font.h"
 
 static char *
-font_search(const char *family) {
+font_search(const char *family)
+{
 	FcPattern *pattern;
 	FcPattern *match;
 	FcResult result;
@@ -57,7 +58,8 @@ font_search(const char *family) {
 }
 
 extern font_t *
-font_load(const char *family, u32 size) {
+font_load(const char *family, u32 size)
+{
 	char *path;
 	font_t *font;
 
@@ -99,7 +101,8 @@ font_load(const char *family, u32 size) {
 }
 
 extern FT_GlyphSlot
-font_get_glyph(font_t *font, char c) {
+font_get_glyph(font_t *font, char c)
+{
 	if (FT_Load_Glyph(font->face, FT_Get_Char_Index(font->face, c), 0)) {
 		die("error while calling FT_Load_Glyph()");
 	}
@@ -112,7 +115,8 @@ font_get_glyph(font_t *font, char c) {
 }
 
 extern void
-font_unload(font_t *font) {
+font_unload(font_t *font)
+{
 	FT_Done_FreeType(font->library);
 	free(font);
 }

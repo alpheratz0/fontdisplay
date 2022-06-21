@@ -22,13 +22,15 @@
 #include "debug.h"
 
 extern void
-die(const char *err) {
+die(const char *err)
+{
 	fprintf(stderr, "fontdisplay: %s\n", err);
 	exit(1);
 }
 
 extern void
-dief(const char *err, ...) {
+dief(const char *err, ...)
+{
 	va_list list;
 	fputs("fontdisplay: ", stderr);
 	va_start(list, err);

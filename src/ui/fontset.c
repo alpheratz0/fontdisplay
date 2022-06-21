@@ -35,14 +35,16 @@ static const char symbols[] = "~ ! @ # $ % ^ & _ \" ` ' | : , . ?";
 static const char symbols2[] = "- + * / \\ = [ ] ( ) { } < > ;";
 
 extern fontset_style_t
-fontset_style_from(u32 text_color) {
+fontset_style_from(u32 text_color)
+{
 	fontset_style_t style;
 	style.text_color = text_color;
 	return style;
 }
 
 extern fontset_t *
-fontset_create(font_t *font, fontset_style_t *style, bool numbers, bool alphabet, bool symbols) {
+fontset_create(font_t *font, fontset_style_t *style, bool numbers, bool alphabet, bool symbols)
+{
 	fontset_t *fontset;
 
 	if ((fontset = malloc(sizeof(fontset_t)))) {
@@ -61,7 +63,8 @@ fontset_create(font_t *font, fontset_style_t *style, bool numbers, bool alphabet
 }
 
 extern void
-fontset_render_onto(fontset_t *fontset, bitmap_t *bmp) {
+fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
+{
 	u32 current_x;
 	u32 current_y;
 
@@ -103,6 +106,7 @@ fontset_render_onto(fontset_t *fontset, bitmap_t *bmp) {
 }
 
 extern void
-fontset_free(fontset_t *fontset) {
+fontset_free(fontset_t *fontset)
+{
 	free(fontset);
 }
