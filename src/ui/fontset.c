@@ -26,13 +26,24 @@
 #include "label.h"
 #include "fontset.h"
 
-static const char numbers[] = "0 1 2 3 4 5 6 7 8 9";
-static const char alphabet_lc1[] = "a b c d e f g h i j k l m";
-static const char alphabet_lc2[] = "n o p q r s t u v w x y z";
-static const char alphabet_uc1[] = "A  B  C  D  E  F  G  H  I  J  K  L  M";
-static const char alphabet_uc2[] = "N  O  P  Q  R  S  T  U  V  W  X  Y  Z";
-static const char symbols[] = "~ ! @ # $ % ^ & _ \" ` ' | : , . ?";
-static const char symbols2[] = "- + * / \\ = [ ] ( ) { } < > ;";
+#define ARRAY_LENGTH(arr) (sizeof(arr) / sizeof(arr[0]))
+
+static const char *numbers[] = {
+	"0 1 2 3 4 5 6 7 8 9"
+};
+
+static const char *alphabet[] = {
+	"a b c d e f g h i j k l m",
+	"n o p q r s t u v w x y z",
+	"A  B  C  D  E  F  G  H  I  J  K  L  M",
+	"N  O  P  Q  R  S  T  U  V  W  X  Y  Z"
+};
+
+static const char *symbols[] = {
+	"~ ! @ # $ % ^ & _ \" ` ' | : , . ?",
+	"- + * / \\ = [ ] ( ) { } < > ;"
+};
+
 
 extern fontset_style_t
 fontset_style_from(font_t *font, uint32_t foreground)
@@ -63,7 +74,7 @@ fontset_create(fontset_style_t *style, enum charset charset)
 extern void
 fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
 {
-	uint32_t x, y;
+	uint32_t y;
 
 	y = (
 		bmp->height - 
@@ -73,38 +84,30 @@ fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
 				(fontset->charset & CHARSET_SYMBOLS ? 2 : 0))
 		) / 2;
 
+#define CHARSET_RENDER(ch) do {                                 \
+	size_t i;                                                   \
+	font_t *font;                                               \
+	font = fontset->style->font;                                \
+	for (i = 0; i < ARRAY_LENGTH(ch); i++) {                    \
+		label_render_onto(                                      \
+			ch[i], font, fontset->style->foreground,            \
+			(bmp->width - strlen(ch[i]) * font->width) / 2,     \
+			y, bmp                                              \
+		);                                                      \
+		y += font->height;                                      \
+	}                                                           \
+} while (0)
+
 	if (fontset->charset & CHARSET_NUMBERS) {
-		x = (bmp->width - strlen(numbers) * fontset->style->font->width) / 2;
-		label_render_onto(numbers, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
+		CHARSET_RENDER(numbers);
 	}
 
 	if (fontset->charset & CHARSET_ALPHABET) {
-		x = (bmp->width - strlen(alphabet_lc1) * fontset->style->font->width) / 2;
-		label_render_onto(alphabet_lc1, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
-
-		x = (bmp->width - strlen(alphabet_lc2) * fontset->style->font->width) / 2;
-		label_render_onto(alphabet_lc2, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
-
-		x = (bmp->width - strlen(alphabet_uc1) * fontset->style->font->width) / 2;
-		label_render_onto(alphabet_uc1, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
-
-		x = (bmp->width - strlen(alphabet_uc2) * fontset->style->font->width) / 2;
-		label_render_onto(alphabet_uc2, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
+		CHARSET_RENDER(alphabet);
 	}
 
 	if (fontset->charset & CHARSET_SYMBOLS) {
-		x = (bmp->width - strlen(symbols) * fontset->style->font->width) / 2;
-		label_render_onto(symbols, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
-
-		x = (bmp->width - strlen(symbols2) * fontset->style->font->width) / 2;
-		label_render_onto(symbols2, fontset->style->font, fontset->style->foreground, x, y, bmp);
-		y += fontset->style->font->height;
+		CHARSET_RENDER(symbols);
 	}
 }
 
