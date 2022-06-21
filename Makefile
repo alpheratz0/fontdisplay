@@ -1,10 +1,10 @@
-VERSION = 1.0.1
+VERSION = 1.0.1-rev+${shell git rev-parse --short=16 HEAD}
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 LDLIBS = -lxcb -lfreetype -lxcb-image -lfontconfig
 LDFLAGS = -s ${LDLIBS}
 INCS = -I/usr/include -I/usr/include/freetype2
-CFLAGS = -pedantic -Wall -Wextra -Os ${INCS} -DVERSION=\"${VERSION}\"
+CFLAGS = -pedantic -Wall -Wextra -Os ${INCS} -DVERSION="\"${VERSION}\""
 CC = cc
 
 SRC = src/base/bitmap.c \
