@@ -28,8 +28,7 @@ ${OBJ}: src/base/font.h \
 		src/x11/window.h \
 		src/x11/keys.h \
 		src/util/debug.h \
-		src/util/color.h \
-		src/util/numdef.h
+		src/util/color.h
 
 fontdisplay: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
