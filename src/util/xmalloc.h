@@ -15,8 +15,8 @@
 
 */
 
-#ifndef __FONTDISPLAY_XMALLOC_H__
-#define __FONTDISPLAY_XMALLOC_H__
+#ifndef __FONTDISPLAY_UTIL_XMALLOC_H__
+#define __FONTDISPLAY_UTIL_XMALLOC_H__
 
 extern void *
 xmalloc(size_t s);
