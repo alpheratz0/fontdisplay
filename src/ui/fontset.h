@@ -19,13 +19,9 @@
 #define __FONTDISPLAY_UI_FONTSET_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #include "../base/bitmap.h"
 #include "../base/font.h"
-
-typedef struct fontset_style fontset_style_t;
-typedef struct fontset fontset_t;
 
 enum charset {
 	CHARSET_ALPHABET = 1,
@@ -37,25 +33,25 @@ enum charset {
 };
 
 struct fontset_style {
-	font_t *font;
+	struct font *font;
 	uint32_t foreground;
 };
 
 struct fontset {
-	fontset_style_t *style;
+	struct fontset_style *style;
 	enum charset charset;
 };
 
-extern fontset_style_t
-fontset_style_from(font_t *font, uint32_t foreground);
+extern struct fontset_style
+fontset_style_from(struct font *font, uint32_t foreground);
 
-extern fontset_t *
-fontset_create(fontset_style_t *style, enum charset charset);
-
-extern void
-fontset_render_onto(fontset_t *fontset, bitmap_t *bmp);
+extern struct fontset *
+fontset_create(struct fontset_style *style, enum charset charset);
 
 extern void
-fontset_free(fontset_t *fontset);
+fontset_render_onto(struct fontset *fontset, struct bitmap *bmp);
+
+extern void
+fontset_free(struct fontset *fontset);
 
 #endif

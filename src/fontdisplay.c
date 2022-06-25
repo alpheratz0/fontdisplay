@@ -33,7 +33,6 @@
 */
 
 #include <stdint.h>
-#include <stdbool.h>
 #include <string.h>
 
 #include "base/font.h"
@@ -43,13 +42,12 @@
 #include "x11/window.h"
 
 static char *ffamily = "Iosevka";
-static window_t *window;
+static struct window *window;
 
-static bool
+static int
 match_opt(const char *in, const char *sh, const char *lo)
 {
-	return (strcmp(in, sh) == 0) ||
-		   (strcmp(in, lo) == 0);
+	return (strcmp(in, sh) == 0) || (strcmp(in, lo) == 0);
 }
 
 static inline void
@@ -100,9 +98,9 @@ version(void)
 int
 main(int argc, char **argv)
 {
-	font_t *font;
-	fontset_t *fontset;
-	fontset_style_t style;
+	struct font *font;
+	struct fontset *fontset;
+	struct fontset_style style;
 
 	if (++argv, --argc > 0) {
 		if (match_opt(*argv, "-h", "--help")) usage();

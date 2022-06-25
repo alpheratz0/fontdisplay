@@ -15,28 +15,19 @@
 
 */
 
-#ifndef __FONTDISPLAY_BASE_FONT_H__
-#define __FONTDISPLAY_BASE_FONT_H__
+#include <stdlib.h>
 
-#include <stdint.h>
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include "debug.h"
+#include "xmalloc.h"
 
-struct font {
-	FT_Library library;
-	FT_Face face;
-	uint32_t size;
-	uint32_t height;
-	uint32_t width;
-};
+extern void *
+xmalloc(size_t size)
+{
+	void *p;
 
-extern struct font *
-font_load(const char *family, uint32_t size);
+	if (NULL == (p = malloc(size))) {
+		die("error while calling malloc, no memory available");
+	}
 
-extern FT_GlyphSlot
-font_get_glyph(struct font *font, char c);
-
-extern void
-font_unload(struct font *font);
-
-#endif
+	return p;
+}

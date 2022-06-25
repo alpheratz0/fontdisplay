@@ -17,12 +17,11 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <string.h>
 
 #include "../base/bitmap.h"
 #include "../base/font.h"
-#include "../util/debug.h"
+#include "../util/xmalloc.h"
 #include "label.h"
 #include "fontset.h"
 
@@ -45,10 +44,10 @@ static const char *symbols[] = {
 };
 
 
-extern fontset_style_t
-fontset_style_from(font_t *font, uint32_t foreground)
+extern struct fontset_style
+fontset_style_from(struct font *font, uint32_t foreground)
 {
-	fontset_style_t style;
+	struct fontset_style style;
 
 	style.font = font;
 	style.foreground = foreground;
@@ -56,14 +55,12 @@ fontset_style_from(font_t *font, uint32_t foreground)
 	return style;
 }
 
-extern fontset_t *
-fontset_create(fontset_style_t *style, enum charset charset)
+extern struct fontset *
+fontset_create(struct fontset_style *style, enum charset charset)
 {
-	fontset_t *fontset;
+	struct fontset *fontset;
 
-	if (NULL == (fontset = malloc(sizeof(fontset_t)))) {
-		die("error while calling malloc, no memory available");
-	}
+	fontset = xmalloc(sizeof(struct fontset));
 
 	fontset->style = style;
 	fontset->charset = charset;
@@ -72,7 +69,7 @@ fontset_create(fontset_style_t *style, enum charset charset)
 }
 
 extern void
-fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
+fontset_render_onto(struct fontset *fontset, struct bitmap *bmp)
 {
 	uint32_t y;
 
@@ -86,7 +83,7 @@ fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
 
 #define CHARSET_RENDER(ch) do {                                 \
 	size_t i;                                                   \
-	font_t *font;                                               \
+	struct font *font;                                          \
 	font = fontset->style->font;                                \
 	for (i = 0; i < ARRAY_LENGTH(ch); i++) {                    \
 		label_render_onto(                                      \
@@ -112,7 +109,7 @@ fontset_render_onto(fontset_t *fontset, bitmap_t *bmp)
 }
 
 extern void
-fontset_free(fontset_t *fontset)
+fontset_free(struct fontset *fontset)
 {
 	free(fontset);
 }
