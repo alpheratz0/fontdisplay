@@ -15,7 +15,7 @@
 
 */
 
-#define D_XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 500
 
 #include <stdlib.h>
 #include <stdint.h>
