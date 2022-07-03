@@ -220,9 +220,7 @@ unload_font(void)
 }
 
 static void
-label_render_char_onto(char c,
-                       uint32_t x,
-					   uint32_t y)
+render_char(char c, uint32_t x, uint32_t y)
 {
 	FT_GlyphSlot glyph;
 	uint32_t width, height;
@@ -248,23 +246,22 @@ label_render_char_onto(char c,
 }
 
 static void
-label_render_onto(const char *t,
-                  uint32_t y)
+render_string_centered(const char *str, uint32_t y)
 {
 	size_t i;
 	size_t len;
 	uint32_t x;
 
-	len = strlen(t);
+	len = strlen(str);
 	x = (swidth - len * ftwidth) / 2;
 
-	for (i = 0; i < len && t[i] != '\n'; ++i) {
-		label_render_char_onto(t[i], x + i * ftwidth, y);
+	for (i = 0; i < len && str[i] != '\n'; ++i) {
+		render_char(str[i], x + i * ftwidth, y);
 	}
 }
 
 static xcb_atom_t
-xatom(const char *name)
+get_atom(const char *name)
 {
 	xcb_atom_t atom;
 	xcb_generic_error_t *error;
@@ -340,15 +337,15 @@ create_window(void)
 	/* add WM_DELETE_WINDOW to WM_PROTOCOLS */
 	xcb_change_property(
 		conn, XCB_PROP_MODE_REPLACE, window,
-		xatom("WM_PROTOCOLS"), XCB_ATOM_ATOM, 32, 1,
-		(const xcb_atom_t[]) { xatom("WM_DELETE_WINDOW") }
+		get_atom("WM_PROTOCOLS"), XCB_ATOM_ATOM, 32, 1,
+		(const xcb_atom_t[]) { get_atom("WM_DELETE_WINDOW") }
 	);
 
 	/* set FULLSCREEN */
 	xcb_change_property(
 		conn, XCB_PROP_MODE_REPLACE, window,
-		xatom("_NET_WM_STATE"), XCB_ATOM_ATOM, 32, 1,
-		(const xcb_atom_t[]) { xatom("_NET_WM_STATE_FULLSCREEN") }
+		get_atom("_NET_WM_STATE"), XCB_ATOM_ATOM, 32, 1,
+		(const xcb_atom_t[]) { get_atom("_NET_WM_STATE_FULLSCREEN") }
 	);
 
 	xcb_map_window(conn, window);
@@ -365,7 +362,7 @@ destroy_window(void)
 }
 
 static void
-xsize(int16_t *width, int16_t *height)
+get_window_size(int16_t *width, int16_t *height)
 {
 	xcb_generic_error_t *error;
 	xcb_get_geometry_cookie_t cookie;
@@ -391,7 +388,7 @@ h_client_message(xcb_client_message_event_t *ev)
 {
 	/* check if the wm sent a delete window message */
 	/* https://www.x.org/docs/ICCCM/icccm.pdf */
-	if (ev->data.data32[0] == xatom("WM_DELETE_WINDOW")) {
+	if (ev->data.data32[0] == get_atom("WM_DELETE_WINDOW")) {
 		destroy_window();
 		unload_font();
 		exit(0);
@@ -405,13 +402,13 @@ h_expose(UNUSED xcb_expose_event_t *ev)
 	size_t i, lines;
 	int32_t y;
 
-	xsize(&width, &height);
+	get_window_size(&width, &height);
 
 	lines = sizeof(text) / sizeof(text[0]);
 	y = (sheight - lines * ftheight) / 2;
 
 	for (i = 0; i < lines; ++i) {
-		label_render_onto(text[i], y);
+		render_string_centered(text[i], y);
 		y += ftheight;
 	}
 
