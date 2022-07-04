@@ -238,7 +238,7 @@ render_char(char c, uint32_t x, uint32_t y)
 			ymap = y + i - glyph->bitmap_top + ftsize;
 			gray = glyph->bitmap.buffer[i*width+j];
 
-			px[ymap*swidth+xmap] = color_lerp(px[ymap*swidth+xmap], TEXT_COLOR, gray);
+			px[ymap*swidth+xmap] = color_lerp(0, TEXT_COLOR, gray);
 		}
 	}
 }
@@ -401,6 +401,7 @@ h_expose(UNUSED xcb_expose_event_t *ev)
 	int32_t y;
 
 	get_window_size(&width, &height);
+	xcb_clear_area(conn, 0, window, 0, 0, width, height);
 
 	lines = sizeof(text) / sizeof(text[0]);
 	y = (sheight - lines * ftheight) / 2;
