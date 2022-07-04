@@ -49,8 +49,6 @@
 #define UNUSED                             __attribute__((unused))
 
 #define TEXT_COLOR                         (0xada54e)
-#define KEY_ESCAPE                         (9)
-#define KEY_Q                              (24)
 
 #define CHKFTERR(name,err) do {                                 \
 	FT_Error error;                                             \
