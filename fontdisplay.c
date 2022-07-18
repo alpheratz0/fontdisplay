@@ -441,8 +441,6 @@ main(int argc, char **argv)
 			case XCB_EXPOSE:
 				h_expose((xcb_expose_event_t *)(ev));
 				break;
-			default:
-				break;
 		}
 
 		free(ev);
