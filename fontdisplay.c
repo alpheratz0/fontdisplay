@@ -91,13 +91,14 @@ die(const char *err)
 }
 
 static void
-dief(const char *err, ...)
+dief(const char *fmt, ...)
 {
-	va_list list;
+	va_list args;
+
 	fputs("fontdisplay: ", stderr);
-	va_start(list, err);
-	vfprintf(stderr, err, list);
-	va_end(list);
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
 	fputc('\n', stderr);
 	exit(1);
 }
@@ -130,25 +131,10 @@ color_lerp(uint32_t from, uint32_t to, uint8_t v)
 	return (r << 16) | (g << 8) | b;
 }
 
-static int
-match_opt(const char *in, const char *sh, const char *lo)
-{
-	return (strcmp(in, sh) == 0) || (strcmp(in, lo) == 0);
-}
-
-static inline void
-print_opt(const char *sh, const char *lo, const char *desc)
-{
-	printf("%7s | %-25s %s\n", sh, lo, desc);
-}
-
 static void
 usage(void)
 {
-	puts("Usage: fontdisplay [ -hv ] FONT_FAMILY");
-	puts("Options are:");
-	print_opt("-h", "--help", "display this message and exit");
-	print_opt("-v", "--version", "display the program version");
+	puts("usage: fontdisplay [-hv] font_family");
 	exit(0);
 }
 
@@ -424,8 +410,8 @@ main(int argc, char **argv)
 	const char *family = "Iosevka";
 
 	if (++argv, --argc > 0) {
-		if (match_opt(*argv, "-h", "--help")) usage();
-		else if (match_opt(*argv, "-v", "--version")) version();
+		if (!strcmp(*argv, "-h")) usage();
+		else if (!strcmp(*argv, "-v")) version();
 		else if (**argv == '-') dief("invalid option %s", *argv);
 		else family = *argv;
 	}
