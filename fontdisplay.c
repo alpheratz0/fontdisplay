@@ -134,7 +134,7 @@ color_lerp(uint32_t from, uint32_t to, uint8_t v)
 static void
 usage(void)
 {
-	puts("usage: fontdisplay [-hv] font_family");
+	puts("usage: fontdisplay [-hv] [font_family]");
 	exit(0);
 }
 
