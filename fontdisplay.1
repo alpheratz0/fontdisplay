@@ -1,38 +1,33 @@
-.TH FONTDISPLAY 1 "July 3, 2022"
-.SH NAME
-fontdisplay \- render the alphabet, numbers and symbols with the specified font.
-.SH SYNOPSIS
-\fBfontdisplay\fP [ -hv ] FONT_FAMILY
-.SH OPTIONS
-.TP
-\fB\-h\fR, \fB\-\-help\fR
-show the help message and exit
-.TP
-\fB\-v\fR, \fB\-\-version\fR
+.Dd August 12, 2022
+.Dt FONTDISPLAY 1
+.Sh NAME
+.Nm fontdisplay
+.Nd font previewer for X
+.Sh SYNOPSIS
+.Nm
+.Op Fl hv
+.Op Ar font_family
+.Sh DESCRIPTION
+The
+.Nm
+application renders the alphabet, numbers and symbols with the specified font.
+.Sh OPTIONS
+.Bl -tag -width indent
+.It Fl h
+show usage
+.It Fl v
 display the program version
-.SH EXAMPLES
-.TP
-\fBpreview iosevka font (needs to be installed)\fR
+.El
+.Sh EXAMPLES
+.Bl -tag -width indent
+.It preview iosevka font (needs to be installed)
 fontdisplay 'Iosevka'
-.TP
-\fBselect a font family using dmenu and preview it\fR
+.It select a font family using dmenu and preview it
 fc-list : family | grep -v ',' | dmenu -i | xargs -I{} fontdisplay '{}'
-.SH EXIT STATUS
-.TP
-\fB0\fR
-the program terminated successfully
-.TP
-\fB1\fR
-an error occurred
-.SH AUTHOR
-Written by alpheratz0.
-.SH COPYRIGHT
-Copyright \(co 2022 <alpheratz99@protonmail.com>
-.br
-License GPLv2.0: GNU GPL version 2.0 <https://gnu.org/licenses/old-licenses/gpl-2.0.en.html>.
-.br
-This is free software: you are free to change and redistribute it.
-.br
-There is NO WARRANTY, to the extent permitted by law.
-.SH BUGS
+.El
+.Sh SEE ALSO
+.Xr X 7
+.Sh AUTHORS
+.An alpheratz0 Aq Mt alpheratz99@protonmail.com
+.Sh BUGS
 https://github.com/alpheratz0/fontdisplay/issues
