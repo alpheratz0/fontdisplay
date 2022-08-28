@@ -53,9 +53,8 @@
 #define CHKFTERR(name,err) do {                                 \
 	FT_Error error;                                             \
 	error = (err);                                              \
-	if (error != 0) {                                           \
+	if (error != 0)                                             \
 		dief(name " failed with error code: %d", (int)(error)); \
-	}                                                           \
 } while (0)
 
 /* X11 */
@@ -108,9 +107,8 @@ xmalloc(size_t size)
 {
 	void *p;
 
-	if (NULL == (p = malloc(size))) {
+	if (NULL == (p = malloc(size)))
 		die("error while calling malloc, no memory available");
-	}
 
 	return p;
 }
@@ -181,9 +179,8 @@ load_font(const char *family, uint32_t size)
 {
 	char *path;
 
-	if (NULL == (path = search_font(family))) {
+	if (NULL == (path = search_font(family)))
 		dief("font family not found: %s", family);
-	}
 
 	CHKFTERR("FT_Init_FreeType", FT_Init_FreeType(&ftlib));
 	CHKFTERR("FT_New_Face", FT_New_Face(ftlib, path, 0, &ftface));
@@ -207,10 +204,7 @@ static void
 render_char(char c, uint32_t x, uint32_t y)
 {
 	FT_GlyphSlot glyph;
-	uint32_t width, height;
-	uint32_t xmap, ymap;
-	uint32_t gray;
-	uint32_t i, j;
+	uint32_t width, height, xmap, ymap, gray, i, j;
 
 	CHKFTERR("FT_Load_Char", FT_Load_Char(ftface, c, FT_LOAD_RENDER));
 
@@ -232,16 +226,14 @@ render_char(char c, uint32_t x, uint32_t y)
 static void
 render_string_centered(const char *str, uint32_t y)
 {
-	size_t i;
-	size_t len;
+	size_t i, len;
 	uint32_t x;
 
 	len = strlen(str);
 	x = (swidth - len * ftwidth) / 2;
 
-	for (i = 0; i < len && str[i] != '\n'; ++i) {
+	for (i = 0; i < len && str[i] != '\n'; ++i)
 		render_char(str[i], x + i * ftwidth, y);
-	}
 }
 
 static xcb_atom_t
@@ -252,14 +244,12 @@ get_atom(const char *name)
 	xcb_intern_atom_cookie_t cookie;
 	xcb_intern_atom_reply_t *reply;
 
-	error = NULL;
 	cookie = xcb_intern_atom(conn, 0, strlen(name), name);
 	reply = xcb_intern_atom_reply(conn, cookie, &error);
 
-	if (NULL != error) {
+	if (NULL != error)
 		dief("xcb_intern_atom failed with error code: %d",
 				(int)(error->error_code));
-	}
 
 	atom = reply->atom;
 	free(reply);
@@ -271,16 +261,12 @@ static void
 create_window(void)
 {
 	xcb_screen_t *screen;
-	uint32_t evmask;
 
-	if (xcb_connection_has_error(conn = xcb_connect(NULL, NULL))) {
+	if (xcb_connection_has_error(conn = xcb_connect(NULL, NULL)))
 		die("can't open display");
-	}
 
-	if (NULL == (screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data)) {
-		xcb_disconnect(conn);
+	if (NULL == (screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data))
 		die("can't get default screen");
-	}
 
 	swidth = screen->width_in_pixels;
 	sheight = screen->height_in_pixels;
@@ -288,15 +274,16 @@ create_window(void)
 	gc = xcb_generate_id(conn);
 	px = xmalloc(swidth*sheight*sizeof(uint32_t));
 
-	evmask = XCB_EVENT_MASK_EXPOSURE;
-
-	xcb_create_window(
+	xcb_create_window_aux(
 		conn, XCB_COPY_FROM_PARENT, window, screen->root,
 		0, 0, 800, 600, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
-		screen->root_visual, XCB_CW_EVENT_MASK, &evmask
+		screen->root_visual, XCB_CW_EVENT_MASK,
+		(const xcb_create_window_value_list_t []) {{
+			.event_mask = XCB_EVENT_MASK_EXPOSURE
+		}}
 	);
 
-	xcb_create_gc(conn, gc, window, 0, 0);
+	xcb_create_gc(conn, gc, window, 0, NULL);
 
 	image = xcb_image_create_native(
 		conn, swidth, sheight, XCB_IMAGE_FORMAT_Z_PIXMAP,
@@ -352,14 +339,12 @@ get_window_size(int16_t *width, int16_t *height)
 	xcb_get_geometry_cookie_t cookie;
 	xcb_get_geometry_reply_t *reply;
 
-	error = NULL;
 	cookie = xcb_get_geometry(conn, window);
 	reply = xcb_get_geometry_reply(conn, cookie, &error);
 
-	if (NULL != error) {
+	if (NULL != error)
 		dief("xcb_get_geometry failed with error code: %d",
 				(int)(error->error_code));
-	}
 
 	*width = reply->width;
 	*height = reply->height;
@@ -392,10 +377,8 @@ h_expose(UNUSED xcb_expose_event_t *ev)
 	lines = sizeof(text) / sizeof(text[0]);
 	y = (sheight - lines * ftheight) / 2;
 
-	for (i = 0; i < lines; ++i) {
+	for (i = 0; i < lines; ++i, y += ftheight)
 		render_string_centered(text[i], y);
-		y += ftheight;
-	}
 
 	xcb_image_put(
 		conn, window, gc, image,
