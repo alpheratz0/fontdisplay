@@ -46,9 +46,9 @@
 #include <xcb/xcb_image.h>
 #include <xcb/xproto.h>
 
-#define UNUSED                             __attribute__((unused))
+#include "config.h"
 
-#define TEXT_COLOR                         (0xada54e)
+#define UNUSED                             __attribute__((unused))
 
 #define CHKFTERR(name,err) do {                                 \
 	FT_Error error;                                             \
@@ -218,7 +218,7 @@ render_char(char c, uint32_t x, uint32_t y)
 			ymap = y + i - glyph->bitmap_top + ftsize;
 			gray = glyph->bitmap.buffer[i*width+j];
 
-			px[ymap*swidth+xmap] = color_lerp(0, TEXT_COLOR, gray);
+			px[ymap*swidth+xmap] = color_lerp(0, text_color, gray);
 		}
 	}
 }
