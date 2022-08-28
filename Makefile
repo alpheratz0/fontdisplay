@@ -30,7 +30,7 @@ install: all
 
 dist: clean
 	mkdir -p fontdisplay-$(VERSION)
-	cp -R LICENSE Makefile README fontdisplay.1 fontdisplay.c fontdisplay-$(VERSION)
+	cp -R COPYING Makefile README fontdisplay.1 fontdisplay.c fontdisplay-$(VERSION)
 	tar -cf fontdisplay-$(VERSION).tar fontdisplay-$(VERSION)
 	gzip fontdisplay-$(VERSION).tar
 	rm -rf fontdisplay-$(VERSION)
