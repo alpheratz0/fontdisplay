@@ -1,16 +1,7 @@
 .POSIX:
 .PHONY: all clean install uninstall dist
 
-VERSION = 1.0.1
-
-CC      = cc
-INCS    = -I/usr/include/freetype2
-CFLAGS  = -std=c99 -pedantic -Wall -Wextra -Os $(INCS) -DVERSION=\"$(VERSION)\"
-LDLIBS  = -lxcb -lfreetype -lxcb-image -lfontconfig
-LDFLAGS = -s
-
-PREFIX    = /usr/local
-MANPREFIX = $(PREFIX)/share/man
+include config.mk
 
 all: fontdisplay
 
@@ -30,7 +21,7 @@ install: all
 
 dist: clean
 	mkdir -p fontdisplay-$(VERSION)
-	cp -R COPYING Makefile README fontdisplay.1 fontdisplay.c fontdisplay-$(VERSION)
+	cp -R COPYING config.mk Makefile README fontdisplay.1 fontdisplay.c fontdisplay-$(VERSION)
 	tar -cf fontdisplay-$(VERSION).tar fontdisplay-$(VERSION)
 	gzip fontdisplay-$(VERSION).tar
 	rm -rf fontdisplay-$(VERSION)
