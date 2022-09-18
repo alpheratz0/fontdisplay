@@ -54,7 +54,7 @@
 	FT_Error error;                                             \
 	error = (err);                                              \
 	if (error != 0)                                             \
-		dief(name " failed with error code: %d", (int)(error)); \
+		die(name " failed with error code: %d", (int)(error)); \
 } while (0)
 
 /* X11 */
@@ -83,14 +83,7 @@ static const char *text[] = {
 
 
 static void
-die(const char *err)
-{
-	fprintf(stderr, "fontdisplay: %s\n", err);
-	exit(1);
-}
-
-static void
-dief(const char *fmt, ...)
+die(const char *fmt, ...)
 {
 	va_list args;
 
@@ -180,7 +173,7 @@ load_font(const char *family, uint32_t size)
 	char *path;
 
 	if (NULL == (path = search_font(family)))
-		dief("font family not found: %s", family);
+		die("font family not found: %s", family);
 
 	CHKFTERR("FT_Init_FreeType", FT_Init_FreeType(&ftlib));
 	CHKFTERR("FT_New_Face", FT_New_Face(ftlib, path, 0, &ftface));
@@ -248,7 +241,7 @@ get_atom(const char *name)
 	reply = xcb_intern_atom_reply(conn, cookie, &error);
 
 	if (NULL != error)
-		dief("xcb_intern_atom failed with error code: %d",
+		die("xcb_intern_atom failed with error code: %d",
 				(int)(error->error_code));
 
 	atom = reply->atom;
@@ -343,7 +336,7 @@ get_window_size(int16_t *width, int16_t *height)
 	reply = xcb_get_geometry_reply(conn, cookie, &error);
 
 	if (NULL != error)
-		dief("xcb_get_geometry failed with error code: %d",
+		die("xcb_get_geometry failed with error code: %d",
 				(int)(error->error_code));
 
 	*width = reply->width;
@@ -390,14 +383,26 @@ int
 main(int argc, char **argv)
 {
 	xcb_generic_event_t *ev;
-	const char *family = "Iosevka";
+	const char *family;
+	
+	family = NULL;
 
-	if (++argv, --argc > 0) {
-		if (!strcmp(*argv, "-h")) usage();
-		else if (!strcmp(*argv, "-v")) version();
-		else if (**argv == '-') dief("invalid option %s", *argv);
-		else family = *argv;
+	while (++argv, --argc > 0) {
+		if ((*argv)[0] == '-' && (*argv)[1] != '\0' && (*argv)[2] == '\0') {
+			switch ((*argv)[1]) {
+				case 'h': usage(); break;
+				case 'v': version(); break;
+				default: die("invalid option %s", *argv); break;
+			}
+		} else {
+			if (NULL != family)
+				die("unexpected argument: %s", *argv);
+			family = *argv;
+		}
 	}
+
+	if (NULL == family)
+		family = "Iosevka";
 
 	create_window();
 	load_font(family, 40);
