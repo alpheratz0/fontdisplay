@@ -1,7 +1,7 @@
 # Copyright (C) 2022 <alpheratz99@protonmail.com>
 # This program is free software.
 
-VERSION   = 1.0.1
+VERSION   = 1.0.2
 
 CC        = cc
 INCS      = -I/usr/include/freetype2 -I/usr/X11R6/include
