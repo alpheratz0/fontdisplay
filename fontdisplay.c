@@ -59,11 +59,12 @@
 
 /* X11 */
 static xcb_connection_t *conn;
+static xcb_screen_t *screen;
 static xcb_window_t window;
 static xcb_gcontext_t gc;
 static xcb_image_t *image;
-static uint16_t swidth, sheight;
-static uint32_t *px;
+static int32_t wwidth, wheight;
+static uint32_t *wpx;
 
 /* FT */
 static FT_Library ftlib;
@@ -71,6 +72,8 @@ static FT_Face ftface;
 static uint32_t ftsize;
 static uint32_t ftwidth, ftheight;
 
+static uint32_t *tpx;
+static int32_t twidth, theight;
 static const char *text[] = {
 	"0 1 2 3 4 5 6 7 8 9",
 	"a b c d e f g h i j k l m",
@@ -96,12 +99,12 @@ die(const char *fmt, ...)
 }
 
 static void *
-xmalloc(size_t size)
+xcalloc(size_t n, size_t size)
 {
 	void *p;
 
-	if (NULL == (p = malloc(size)))
-		die("error while calling malloc, no memory available");
+	if (NULL == (p = calloc(n, size)))
+		die("error while calling calloc, no memory available");
 
 	return p;
 }
@@ -197,36 +200,24 @@ static void
 render_char(char c, uint32_t x, uint32_t y)
 {
 	FT_GlyphSlot glyph;
-	uint32_t width, height, xmap, ymap, gray, i, j;
+	int32_t gwidth, gheight, xmap, ymap, gray, i, j;
 
 	CHKFTERR("FT_Load_Char", FT_Load_Char(ftface, c, FT_LOAD_RENDER));
 
 	glyph = ftface->glyph;
-	height = glyph->bitmap.rows;
-	width = glyph->bitmap.width;
+	gheight = glyph->bitmap.rows;
+	gwidth = glyph->bitmap.width;
 
-	for (i = 0; i < height; ++i) {
-		for (j = 0; j < width; ++j) {
+	for (i = 0; i < gheight; ++i) {
+		for (j = 0; j < gwidth; ++j) {
 			xmap = x + j + glyph->bitmap_left;
 			ymap = y + i - glyph->bitmap_top + ftsize;
-			gray = glyph->bitmap.buffer[i*width+j];
+			gray = glyph->bitmap.buffer[i*gwidth+j];
 
-			px[ymap*swidth+xmap] = color_lerp(0, text_color, gray);
+			if (ymap < theight && xmap < twidth)
+				tpx[ymap*twidth+xmap] = color_lerp(0, text_color, gray);
 		}
 	}
-}
-
-static void
-render_string_centered(const char *str, uint32_t y)
-{
-	size_t i, len;
-	uint32_t x;
-
-	len = strlen(str);
-	x = (swidth - len * ftwidth) / 2;
-
-	for (i = 0; i < len && str[i] != '\n'; ++i)
-		render_char(str[i], x + i * ftwidth, y);
 }
 
 static xcb_atom_t
@@ -253,63 +244,56 @@ get_atom(const char *name)
 static void
 create_window(void)
 {
-	xcb_screen_t *screen;
-
 	if (xcb_connection_has_error(conn = xcb_connect(NULL, NULL)))
 		die("can't open display");
 
 	if (NULL == (screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data))
 		die("can't get default screen");
 
-	swidth = screen->width_in_pixels;
-	sheight = screen->height_in_pixels;
+	wwidth = screen->width_in_pixels;
+	wheight = screen->height_in_pixels;
+	wpx = xcalloc(wwidth * wheight, sizeof(uint32_t));
+
 	window = xcb_generate_id(conn);
 	gc = xcb_generate_id(conn);
-	px = xmalloc(swidth*sheight*sizeof(uint32_t));
 
 	xcb_create_window_aux(
-		conn, XCB_COPY_FROM_PARENT, window, screen->root,
-		0, 0, 800, 600, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
+		conn, screen->root_depth, window, screen->root, 0, 0,
+		wwidth, wheight, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
 		screen->root_visual, XCB_CW_EVENT_MASK,
 		(const xcb_create_window_value_list_t []) {{
-			.event_mask = XCB_EVENT_MASK_EXPOSURE
+			.event_mask = XCB_EVENT_MASK_EXPOSURE |
+			              XCB_EVENT_MASK_STRUCTURE_NOTIFY
 		}}
 	);
 
 	xcb_create_gc(conn, gc, window, 0, NULL);
 
 	image = xcb_image_create_native(
-		conn, swidth, sheight, XCB_IMAGE_FORMAT_Z_PIXMAP,
-		screen->root_depth, px, sizeof(uint32_t)*swidth*sheight,
-		(uint8_t *)(px)
+		conn, wwidth, wheight, XCB_IMAGE_FORMAT_Z_PIXMAP, screen->root_depth,
+		wpx, sizeof(uint32_t) * wwidth * wheight, (uint8_t *)(wpx)
 	);
 
-	/* set WM_NAME */
 	xcb_change_property(
-		conn, XCB_PROP_MODE_REPLACE, window,
-		XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
-		sizeof("fontdisplay") - 1, "fontdisplay"
+		conn, XCB_PROP_MODE_REPLACE, window, get_atom("_NET_WM_NAME"),
+		get_atom("UTF8_STRING"), 8, sizeof("fontdisplay") - 1, "fontdisplay"
 	);
 
-	/* set WM_CLASS */
 	xcb_change_property(
-		conn, XCB_PROP_MODE_REPLACE, window,
-		XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 8,
-		sizeof("fontdisplay") * 2, "fontdisplay\0fontdisplay\0"
+		conn, XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_CLASS,
+		XCB_ATOM_STRING, 8, sizeof("fontdisplay") * 2, "fontdisplay\0fontdisplay\0"
 	);
 
-	/* add WM_DELETE_WINDOW to WM_PROTOCOLS */
 	xcb_change_property(
 		conn, XCB_PROP_MODE_REPLACE, window,
 		get_atom("WM_PROTOCOLS"), XCB_ATOM_ATOM, 32, 1,
-		(const xcb_atom_t[]) { get_atom("WM_DELETE_WINDOW") }
+		(const xcb_atom_t []) { get_atom("WM_DELETE_WINDOW") }
 	);
 
-	/* set FULLSCREEN */
 	xcb_change_property(
 		conn, XCB_PROP_MODE_REPLACE, window,
 		get_atom("_NET_WM_STATE"), XCB_ATOM_ATOM, 32, 1,
-		(const xcb_atom_t[]) { get_atom("_NET_WM_STATE_FULLSCREEN") }
+		(const xcb_atom_t []) { get_atom("_NET_WM_STATE_FULLSCREEN") }
 	);
 
 	xcb_map_window(conn, window);
@@ -320,29 +304,65 @@ static void
 destroy_window(void)
 {
 	xcb_free_gc(conn, gc);
+	xcb_image_destroy(image);
 	xcb_disconnect(conn);
-	free(image);
-	free(px);
 }
 
 static void
-get_window_size(int16_t *width, int16_t *height)
+prerender_text(void)
 {
-	xcb_generic_error_t *error;
-	xcb_get_geometry_cookie_t cookie;
-	xcb_get_geometry_reply_t *reply;
+	size_t i, n, len, lines, line_max_width;
+	uint32_t y, x;
 
-	cookie = xcb_get_geometry(conn, window);
-	reply = xcb_get_geometry_reply(conn, cookie, &error);
+	lines = sizeof(text) / sizeof(text[0]);
+	theight = lines * ftheight;
+	line_max_width = 0;
 
-	if (NULL != error)
-		die("xcb_get_geometry failed with error code: %d",
-				(int)(error->error_code));
+	for (i = 0; i < lines; ++i)
+		if (strlen(text[i]) > line_max_width)
+			line_max_width = strlen(text[i]);
 
-	*width = reply->width;
-	*height = reply->height;
+	twidth = line_max_width * ftwidth;
 
-	free(reply);
+	tpx = xcalloc(theight * twidth, sizeof(uint32_t));
+	y = 0;
+
+	for (i = 0; i < lines; ++i) {
+		len = strlen(text[i]);
+		x = (twidth - len * ftwidth) / 2;
+
+		for (n = 0; n < len && text[i][n] != '\n'; ++n)
+			render_char(text[i][n], x + n * ftwidth, y);
+
+		y += ftheight;
+	}
+}
+
+static void
+destroy_prerendered_text(void)
+{
+	free(tpx);
+}
+
+static void
+prepare_render(void)
+{
+	int32_t x, y, ox, oy;
+
+	memset(wpx, 0, sizeof(uint32_t) * wwidth * wheight);
+
+	ox = (wwidth - twidth) / 2;
+	oy = (wheight - theight) / 2;
+
+	for (y = 0; y < theight; ++y) {
+		if ((y+oy) < 0 || (y+oy) >= wheight)
+			continue;
+		for (x = 0; x < twidth; ++x) {
+			if ((x+ox) < 0 || (x+ox) >= wwidth)
+				continue;
+			wpx[(y+oy)*wwidth+(x+ox)] = tpx[y*twidth+x];
+		}
+	}
 }
 
 static void
@@ -352,6 +372,7 @@ h_client_message(xcb_client_message_event_t *ev)
 	/* https://www.x.org/docs/ICCCM/icccm.pdf */
 	if (ev->data.data32[0] == get_atom("WM_DELETE_WINDOW")) {
 		destroy_window();
+		destroy_prerendered_text();
 		unload_font();
 		exit(0);
 	}
@@ -360,23 +381,29 @@ h_client_message(xcb_client_message_event_t *ev)
 static void
 h_expose(UNUSED xcb_expose_event_t *ev)
 {
-	int16_t width, height;
-	size_t i, lines;
-	int32_t y;
+	xcb_image_put(conn, window, gc, image, 0, 0, 0);
+}
 
-	get_window_size(&width, &height);
-	xcb_clear_area(conn, 0, window, 0, 0, width, height);
+static void
+h_configure_notify(xcb_configure_notify_event_t *ev)
+{
+	if (wwidth == ev->width && wheight == ev->height)
+		return;
 
-	lines = sizeof(text) / sizeof(text[0]);
-	y = (sheight - lines * ftheight) / 2;
+	xcb_image_destroy(image);
 
-	for (i = 0; i < lines; ++i, y += ftheight)
-		render_string_centered(text[i], y);
+	wwidth = ev->width;
+	wheight = ev->height;
+	wpx = xcalloc(wwidth * wheight, sizeof(uint32_t));
 
-	xcb_image_put(
-		conn, window, gc, image,
-		(width - swidth) / 2, (height - sheight) / 2, 0
+	image = xcb_image_create_native(
+		conn, wwidth, wheight, XCB_IMAGE_FORMAT_Z_PIXMAP, screen->root_depth,
+		wpx, sizeof(uint32_t) * wwidth * wheight, (uint8_t *)(wpx)
 	);
+
+	prepare_render();
+	xcb_image_put(conn, window, gc, image, 0, 0, 0);
+	xcb_flush(conn);
 }
 
 int
@@ -406,11 +433,14 @@ main(int argc, char **argv)
 
 	create_window();
 	load_font(family, 40);
+	prerender_text();
+	prepare_render();
 
 	while ((ev = xcb_wait_for_event(conn))) {
 		switch (ev->response_type & ~0x80) {
-			case XCB_CLIENT_MESSAGE:   h_client_message((void *)(ev)); break;
-			case XCB_EXPOSE:           h_expose((void *)(ev)); break;
+			case XCB_CLIENT_MESSAGE:     h_client_message((void *)(ev)); break;
+			case XCB_EXPOSE:             h_expose((void *)(ev)); break;
+			case XCB_CONFIGURE_NOTIFY:   h_configure_notify((void *)(ev)); break;
 		}
 
 		free(ev);
