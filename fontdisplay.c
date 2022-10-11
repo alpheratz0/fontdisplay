@@ -409,12 +409,8 @@ main(int argc, char **argv)
 
 	while ((ev = xcb_wait_for_event(conn))) {
 		switch (ev->response_type & ~0x80) {
-			case XCB_CLIENT_MESSAGE:
-				h_client_message((xcb_client_message_event_t *)(ev));
-				break;
-			case XCB_EXPOSE:
-				h_expose((xcb_expose_event_t *)(ev));
-				break;
+			case XCB_CLIENT_MESSAGE:   h_client_message((void *)(ev)); break;
+			case XCB_EXPOSE:           h_expose((void *)(ev)); break;
 		}
 
 		free(ev);
