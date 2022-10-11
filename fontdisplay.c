@@ -322,7 +322,7 @@ prerender_text(void)
 		if (strlen(text[i]) > line_max_width)
 			line_max_width = strlen(text[i]);
 
-	twidth = line_max_width * ftwidth;
+	twidth = line_max_width * ftwidth + ftwidth * 5;
 
 	tpx = xcalloc(theight * twidth, sizeof(uint32_t));
 	y = 0;
