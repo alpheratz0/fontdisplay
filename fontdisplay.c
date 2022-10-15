@@ -46,8 +46,6 @@
 #include <xcb/xcb_image.h>
 #include <xcb/xproto.h>
 
-#include "config.h"
-
 #define UNUSED                             __attribute__((unused))
 
 #define CHKFTERR(name,err) do {                                 \
@@ -72,6 +70,7 @@ static FT_Face ftface;
 static uint32_t ftsize;
 static uint32_t ftwidth, ftheight;
 
+static uint32_t tcolor = 0xada54e;
 static uint32_t *tpx;
 static int32_t twidth, theight;
 static const char *text[] = {
@@ -215,7 +214,7 @@ render_char(char c, uint32_t x, uint32_t y)
 			gray = glyph->bitmap.buffer[i*gwidth+j];
 
 			if (ymap < theight && xmap < twidth)
-				tpx[ymap*twidth+xmap] = color_lerp(0, text_color, gray);
+				tpx[ymap*twidth+xmap] = color_lerp(0, tcolor, gray);
 		}
 	}
 }

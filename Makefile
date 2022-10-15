@@ -21,8 +21,7 @@ install: all
 
 dist: clean
 	mkdir -p fontdisplay-$(VERSION)
-	cp -R COPYING config.mk Makefile README fontdisplay.1 config.h \
-		fontdisplay.c fontdisplay-$(VERSION)
+	cp -R COPYING config.mk Makefile README fontdisplay.1 fontdisplay.c fontdisplay-$(VERSION)
 	tar -cf fontdisplay-$(VERSION).tar fontdisplay-$(VERSION)
 	gzip fontdisplay-$(VERSION).tar
 	rm -rf fontdisplay-$(VERSION)
