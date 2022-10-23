@@ -314,7 +314,7 @@ prerender_text(void)
 	uint32_t y, x;
 
 	lines = sizeof(text) / sizeof(text[0]);
-	theight = lines * ftheight;
+	theight = (lines + 2) * ftheight;
 	line_max_width = 0;
 
 	for (i = 0; i < lines; ++i)
@@ -324,7 +324,7 @@ prerender_text(void)
 	twidth = line_max_width * ftwidth + ftwidth * 5;
 
 	tpx = xcalloc(theight * twidth, sizeof(uint32_t));
-	y = 0;
+	y = ftheight;
 
 	for (i = 0; i < lines; ++i) {
 		len = strlen(text[i]);
