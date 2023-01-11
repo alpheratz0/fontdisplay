@@ -48,6 +48,9 @@
 
 #define UNUSED                             __attribute__((unused))
 
+#define BLERP(f,t,s) \
+	((f)+(((t)-(f))*(s))/0xff)
+
 #define CHKFTERR(name,err) do {                                 \
 	FT_Error error;                                             \
 	error = (err);                                              \
@@ -113,13 +116,9 @@ color_lerp(uint32_t from, uint32_t to, uint8_t v)
 {
 	uint8_t r, g, b;
 
-#define BLERP(f,t,s) ((f)+(((t)-(f))*(s))/0xff)
-
 	r = BLERP((from >> 16) & 0xff, (to >> 16) & 0xff, v);
-	g = BLERP((from >> 8) & 0xff, (to >> 8) & 0xff, v);
-	b = BLERP(from & 0xff, to & 0xff, v);
-
-#undef BLERP
+	g = BLERP((from >>  8) & 0xff, (to >>  8) & 0xff, v);
+	b = BLERP((from >>  0) & 0xff, (to >>  0) & 0xff, v);
 
 	return (r << 16) | (g << 8) | b;
 }
