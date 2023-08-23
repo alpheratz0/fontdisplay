@@ -416,9 +416,9 @@ main(int argc, char **argv)
 	while (++argv, --argc > 0) {
 		if ((*argv)[0] == '-' && (*argv)[1] != '\0' && (*argv)[2] == '\0') {
 			switch ((*argv)[1]) {
-				case 'h': usage(); break;
-				case 'v': version(); break;
-				default: die("invalid option %s", *argv); break;
+			case 'h': usage(); break;
+			case 'v': version(); break;
+			default: die("invalid option %s", *argv); break;
 			}
 		} else {
 			if (NULL != family)
@@ -437,9 +437,9 @@ main(int argc, char **argv)
 
 	while ((ev = xcb_wait_for_event(conn))) {
 		switch (ev->response_type & ~0x80) {
-			case XCB_CLIENT_MESSAGE:     h_client_message((void *)(ev)); break;
-			case XCB_EXPOSE:             h_expose((void *)(ev)); break;
-			case XCB_CONFIGURE_NOTIFY:   h_configure_notify((void *)(ev)); break;
+		case XCB_CLIENT_MESSAGE:     h_client_message((void *)(ev)); break;
+		case XCB_EXPOSE:             h_expose((void *)(ev)); break;
+		case XCB_CONFIGURE_NOTIFY:   h_configure_notify((void *)(ev)); break;
 		}
 
 		free(ev);
