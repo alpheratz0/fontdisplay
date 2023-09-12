@@ -1,11 +1,13 @@
-# Copyright (C) 2022 <alpheratz99@protonmail.com>
+# Copyright (C) 2022-2023 <alpheratz99@protonmail.com>
 # This program is free software.
 
-VERSION=1.0.2
-CC=cc
-INCS=-I/usr/include/freetype2 -I/usr/X11R6/include
-CFLAGS=-std=c99 -pedantic -Wall -Wextra -Os $(INCS) -DVERSION=\"$(VERSION)\"
-LDLIBS=-lxcb -lfreetype -lxcb-image -lfontconfig
-LDFLAGS=-L/usr/X11R6/lib -s
-PREFIX=/usr/local
-MANPREFIX=$(PREFIX)/share/man
+VERSION = 2.0.0
+PREFIX = /usr/local
+MANPREFIX = $(PREFIX)/share/man
+PKG_CONFIG = pkg-config
+DEPENDENCIES = fcft xcb xcb-shm xcb-image pixman-1
+INCS = $(shell $(PKG_CONFIG) --cflags $(DEPENDENCIES)) -Iinclude
+LIBS = $(shell $(PKG_CONFIG) --libs $(DEPENDENCIES))
+CFLAGS = -Os $(INCS) $(CPPFLAGS) -DVERSION=\"$(VERSION)\"
+LDFLAGS = -s $(LIBS)
+CC = cc

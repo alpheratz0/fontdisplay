@@ -3,13 +3,21 @@
 
 include config.mk
 
+OBJ=\
+	src/fontdisplay.o \
+	src/pixbuf.o \
+	src/log.o \
+	src/pen.o \
+	src/text-renderer.o \
+	src/utils.o
+
 all: fontdisplay
 
-fontdisplay: fontdisplay.o
-	$(CC) $(LDFLAGS) -o fontdisplay fontdisplay.o $(LDLIBS)
+fontdisplay: $(OBJ)
+	$(CC) $(OBJ) -o fontdisplay $(LDFLAGS)
 
 clean:
-	rm -f fontdisplay fontdisplay.o fontdisplay-$(VERSION).tar.gz
+	rm -f fontdisplay $(OBJ) fontdisplay-$(VERSION).tar.gz
 
 install: all
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
@@ -21,8 +29,8 @@ install: all
 
 dist: clean
 	mkdir -p fontdisplay-$(VERSION)
-	cp -R COPYING config.mk Makefile README fontdisplay.1 \
-		fontdisplay.c fontdisplay-$(VERSION)
+	cp -R COPYING config.mk Makefile README fontdisplay.1 src include \
+		fontdisplay-$(VERSION)
 	tar -cf fontdisplay-$(VERSION).tar fontdisplay-$(VERSION)
 	gzip fontdisplay-$(VERSION).tar
 	rm -rf fontdisplay-$(VERSION)

@@ -2,8 +2,8 @@ fontdisplay is a simple X11 program that renders the alphabet,
 numbers and symbols with the specified font.
 For more information about it's usage check `man fontdisplay`.
 
-This program requires libxcb, libxcb-image, libfreetype2 and
-libfontconfig to be installed.
+This program requires libxcb and libxcb-image, libxcb-shm,
+libfcft and libpixman-1 to be installed.
 In order to build this program you need to run `make`.
 
 This program is free software; you can redistribute it
