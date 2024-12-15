@@ -51,6 +51,9 @@
 
 #define LINE_MARGIN 10
 
+#define FONTDISPLAY_WM_NAME "fontdisplay"
+#define FONTDISPLAY_WM_CLASS "fontdisplay\0fontdisplay\0"
+
 static Pixbuf_t *pb;
 static Pen_t *white_pen;
 static TextRenderer_t *text_renderer;
@@ -93,9 +96,6 @@ get_x11_atom(const char *name)
 static void
 xwininit(void)
 {
-	const char *wm_class,
-		       *wm_name;
-
 	xcb_atom_t _NET_WM_NAME;
 
 	xcb_atom_t WM_PROTOCOLS,
@@ -131,14 +131,12 @@ xwininit(void)
 
 	_NET_WM_NAME = get_x11_atom("_NET_WM_NAME");
 	UTF8_STRING = get_x11_atom("UTF8_STRING");
-	wm_name = "fontdisplay";
 
 	xcb_change_property(conn, XCB_PROP_MODE_REPLACE, win,
-		_NET_WM_NAME, UTF8_STRING, 8, strlen(wm_name), wm_name);
+		_NET_WM_NAME, UTF8_STRING, 8, sizeof(FONTDISPLAY_WM_NAME) - 1, FONTDISPLAY_WM_NAME);
 
-	wm_class = "fontdisplay\0fontdisplay\0";
 	xcb_change_property(conn, XCB_PROP_MODE_REPLACE, win, XCB_ATOM_WM_CLASS,
-		XCB_ATOM_STRING, 8, strlen(wm_class), wm_class);
+		XCB_ATOM_STRING, 8, sizeof(FONTDISPLAY_WM_CLASS) - 1, FONTDISPLAY_WM_CLASS);
 
 	WM_PROTOCOLS = get_x11_atom("WM_PROTOCOLS");
 	WM_DELETE_WINDOW = get_x11_atom("WM_DELETE_WINDOW");
