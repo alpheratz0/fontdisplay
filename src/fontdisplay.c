@@ -208,7 +208,7 @@ version(void)
 int
 main(int argc, char **argv)
 {
-	const char *family;
+	const char *family = NULL;
 	xcb_generic_event_t *ev;
 	size_t i, lines, x, y;
 
